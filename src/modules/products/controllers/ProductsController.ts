@@ -1,21 +1,55 @@
 import { Request, Response } from 'express';
+import CreateProductService from '../services/CreateProductService';
+import DeleteProductService from '../services/DeleteProductService';
 import ListproductService from '../services/ListProductService';
 import ShowProductService from '../services/ShowProductService';
+import UpdateProductService from '../services/UpdateProductService';
 
 export default class ProductsController {
-  public async index(request: Request, response: Response) {
+  public async index(request: Request, response: Response): Promise<Response> {
     const listProducts = new ListproductService();
 
-    const products = listProducts.findProduct();
+    const products = await listProducts.findProduct();
 
     return response.json(products);
   }
 
-  public async show(request: Request, response: Response) {
+  public async show(request: Request, response: Response): Promise<Response> {
     const { id } = request.params;
     const showProduct = new ShowProductService();
 
-    const product = showProduct.execute({ id });
+    const product = await showProduct.execute({ id });
+
+    return response.json(product);
+  }
+
+  public async create(request: Request, response: Response): Promise<Response> {
+    const { name, price, quantity } = request.body();
+
+    const createProduct = new CreateProductService();
+
+    const product = await createProduct.execute({ name, price, quantity });
+
+    return response.json(product);
+  }
+
+  public async update(request: Request, response: Response): Promise<Response> {
+    const { name, price, quantity } = request.body();
+    const { id } = request.params;
+
+    const updateProduct = new UpdateProductService();
+
+    const product = await updateProduct.execute({ id, name, price, quantity });
+
+    return response.json(product);
+  }
+
+  public async delete(request: Request, response: Response): Promise<Response> {
+    const { id } = request.params;
+
+    const updateProduct = new DeleteProductService();
+
+    const product = await updateProduct.execute({ id });
 
     return response.json(product);
   }
